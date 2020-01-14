@@ -1,0 +1,2 @@
+include ':app', ':cli', ':http', ':base'
+rootProject.name='illuspeak'

@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">illuspeaker</string>
+    <string name="finding_service">Finding local services</string>
+    <string name="btn_send">Send</string>
+    <string name="txt_hint">Type Message</string>
+    <string name="list_add"><![CDATA[ [ + ] ]]></string>
+    <string name="list_remove"><![CDATA[ [ - ] ]]></string>
+    <string name="ok">OK</string>
+    <string name="http_daemon_started">HTTP daemon started</string>
+    <string name="http_daemon_stopped">HTTP daemon stopped</string>
+    <string name="http_daemon_label">HTTP daemon</string>
+</resources>
