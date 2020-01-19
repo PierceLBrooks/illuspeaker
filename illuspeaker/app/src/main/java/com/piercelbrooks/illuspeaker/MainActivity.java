@@ -65,11 +65,11 @@ public class MainActivity extends BasicActivity<MayoralFamily> {
 
     @Override
     protected void resume() {
-        showMain();
+        showDraw();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setActionBar(toolbar);
-        getActionBar().setDisplayShowTitleEnabled(false);
+        //getActionBar().setDisplayShowTitleEnabled(false);
     }
 
     @Override
@@ -117,12 +117,20 @@ public class MainActivity extends BasicActivity<MayoralFamily> {
             case MAIN:
                 mayor = (T)(new MainFragment());
                 break;
+            case DRAW:
+                mayor = (T)(new DrawFragment());
+                break;
         }
         return mayor;
     }
 
     public void showMain() {
         MainFragment fragment = new MainFragment();
+        show(fragment);
+    }
+
+    public void showDraw() {
+        DrawFragment fragment = new DrawFragment();
         show(fragment);
     }
 
