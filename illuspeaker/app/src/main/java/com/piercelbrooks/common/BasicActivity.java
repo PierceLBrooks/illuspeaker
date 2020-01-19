@@ -5,6 +5,7 @@ package com.piercelbrooks.common;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
@@ -16,11 +17,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.Window;
 
 import java.util.ArrayList;
 
-public abstract class BasicActivity <T extends Enum<T>> extends FragmentActivity implements Municipality<T> {
+public abstract class BasicActivity <T extends Enum<T>> extends FragmentActivity implements Municipality<T>, WindowCallbackListener {
     private class Shower <U extends Enum<U>, V extends Fragment & Mayor<U>> extends Handler {
         private class Runner <W extends Enum<W>, X extends Fragment & Mayor<W>> implements Runnable {
             private BasicActivity activity;
@@ -84,6 +87,8 @@ public abstract class BasicActivity <T extends Enum<T>> extends FragmentActivity
     protected abstract void stop();
     protected abstract void resume();
     protected abstract void pause();
+    protected abstract void portraitOrientation();
+    protected abstract void landscapeOrientation();
     protected abstract @IdRes int getFragmentSlot();
     protected abstract @LayoutRes int getLayout();
 
@@ -166,6 +171,7 @@ public abstract class BasicActivity <T extends Enum<T>> extends FragmentActivity
         Window window = getWindow();
         androidWindowCallback = window.getCallback();
         commonWindowCallback = new WindowCallback(this, androidWindowCallback);
+        commonWindowCallback.setListener(this);
         window.setCallback(commonWindowCallback);
         resume();
     }
@@ -207,6 +213,19 @@ public abstract class BasicActivity <T extends Enum<T>> extends FragmentActivity
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         commonOnRestoreInstanceState(savedInstanceState, null);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        switch (newConfig.orientation) {
+            case Configuration.ORIENTATION_PORTRAIT:
+                portraitOrientation();
+                break;
+            case Configuration.ORIENTATION_LANDSCAPE:
+                landscapeOrientation();
+                break;
+        }
     }
 
     @Override
@@ -325,6 +344,14 @@ public abstract class BasicActivity <T extends Enum<T>> extends FragmentActivity
     @Override
     public void death() {
         Governor.getInstance().unregister(this);
+    }
+
+    public void onKey(KeyEvent event) {
+
+    }
+
+    public void onTouch(MotionEvent event) {
+
     }
 
     public static Intent getLauncher(Context context, Class<?> activity) {

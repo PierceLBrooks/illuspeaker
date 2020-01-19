@@ -4,6 +4,8 @@
 package com.piercelbrooks.illuspeaker;
 
 import android.support.v4.app.Fragment;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.widget.Toolbar;
 
 import android.support.annotation.IdRes;
@@ -16,6 +18,30 @@ import com.piercelbrooks.common.Mayor;
 public class MainActivity extends BasicActivity<MayoralFamily> {
 
     private static final String TAG = "ILL-MainAct";
+
+    public MainActivity() {
+        super();
+    }
+
+    @Override
+    protected void landscapeOrientation() {
+
+    }
+
+    @Override
+    protected void portraitOrientation() {
+
+    }
+
+    @Override
+    public void onKey(KeyEvent event) {
+        super.onKey(event);
+    }
+
+    @Override
+    public void onTouch(MotionEvent event) {
+        super.onTouch(event);
+    }
 
     @Override
     protected void create() {

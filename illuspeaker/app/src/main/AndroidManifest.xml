@@ -16,13 +16,29 @@
     <!-- Google Play filtering -->
     <uses-feature android:name="android.hardware.wifi.direct" android:required="true"/>
 
-    <application
+    <!--<application
         android:icon="@drawable/ic_launcher_background"
         android:label="@string/app_name">
         <activity
             android:name="com.piercelbrooks.p2p.WiFiServiceDiscoveryActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>-->
+
+    <application
+        android:icon="@drawable/ic_launcher_background"
+        android:name="com.piercelbrooks.illuspeaker.MainApplication"
+        android:label="@string/app_name">
+        <activity
+            android:name="com.piercelbrooks.illuspeaker.MainActivity"
+            android:label="@string/app_name"
+            android:configChanges="orientation"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
