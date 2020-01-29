@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -87,5 +88,20 @@ public abstract class BasicFragment <T extends Enum<T>> extends Fragment impleme
             return;
         }
         municipality.runOnUiThread(runnable);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu) {
+
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+
     }
 }

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -56,6 +57,7 @@ import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -68,10 +70,12 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.piercelbrooks.common.BasicActivity;
+import com.piercelbrooks.illuspeaker.MayoralFamily;
 import com.piercelbrooks.illuspeaker.R;
 
 @SuppressLint("ClickableViewAccessibility")
-public class EasyPaint extends GraphicsActivity implements
+public abstract class EasyPaint extends GraphicsFragment implements
 		ColorPickerDialog.OnColorChangedListener {
 
 	public static int DEFAULT_BRUSH_SIZE = 10;
@@ -88,16 +92,30 @@ public class EasyPaint extends GraphicsActivity implements
 	private boolean waitingForBackgroundColor = false; //If true and colorChanged() is called, fill the background, else mPaint.setColor()
 	private boolean extractingColor = false; //If this is true, the next touch event should extract a color rather than drawing a line.
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	public EasyPaint()
+	{
+		super();
+	}
 
+	@Override
+	public void onDeath()
+	{
+
+	}
+
+	@Override
+	public void onBirth()
+	{
+
+	}
+
+	@Override
+	public void createView(@NonNull View view)
+	{
 		// it removes the title from the actionbar(more space for icons?)
 		// this.getActionBar().setDisplayShowTitleEnabled(false);
 
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		contentView = new MyView( this );
-		setContentView( contentView );
+		contentView = new MyView( getActivity() );
 
 		mPaint = new Paint();
 		mPaint.setAntiAlias(true);
@@ -115,7 +133,7 @@ public class EasyPaint extends GraphicsActivity implements
 		mBlur = new BlurMaskFilter(5, BlurMaskFilter.Blur.NORMAL);
 
 		if (isFirstTime()) {
-			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+			AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
 
 			alert.setTitle(R.string.app_name);
 			alert.setMessage(R.string.app_description);
@@ -123,19 +141,19 @@ public class EasyPaint extends GraphicsActivity implements
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog,
 								int whichButton) {
-							Toast.makeText(getApplicationContext(),
-									R.string.here_is_your_canvas,
+							makeText(R.string.here_is_your_canvas,
 									Toast.LENGTH_SHORT).show();
 						}
 					});
 
 			alert.show();
 		} else {
-			Toast.makeText(getApplicationContext(),
-					R.string.here_is_your_canvas, Toast.LENGTH_SHORT).show();
+			makeText(R.string.here_is_your_canvas, Toast.LENGTH_SHORT).show();
 		}
 
 		loadFromIntents();
+
+		((ViewGroup)view.findViewById(R.id.splash)).addView(contentView);
 	}
 
 	@Override
@@ -146,7 +164,7 @@ public class EasyPaint extends GraphicsActivity implements
 		}
 
 		this.doubleBackToExitPressedOnce = true;
-		Toast.makeText(this, R.string.press_back_again, Toast.LENGTH_SHORT)
+		makeText(R.string.press_back_again, Toast.LENGTH_SHORT)
 				.show();
 
 		new Handler().postDelayed(new Runnable() {
@@ -168,7 +186,7 @@ public class EasyPaint extends GraphicsActivity implements
 		} else {
 			// Changes the color of the action bar when the pencil color is changed
 			if(Build.VERSION.SDK_INT >= 11) {
-				ActionBar actionBar = getActionBar();
+				ActionBar actionBar = ((BasicActivity<MayoralFamily>)getMunicipality()).getActionBar();
 				ColorDrawable colorDrawable = new ColorDrawable(color);
 				actionBar.setBackgroundDrawable(colorDrawable);
 			}
@@ -271,7 +289,7 @@ public class EasyPaint extends GraphicsActivity implements
 			super(c);
 
 			setId(R.id.CanvasId);
-			Display display = getWindowManager().getDefaultDisplay();
+			Display display = getActivity().getWindowManager().getDefaultDisplay();
 			Point size = new Point(display.getWidth(), display.getHeight());
 			mBitmapBackground = Bitmap.createBitmap(size.x, size.y,  Bitmap.Config.ARGB_8888);
 			mBitmap = Bitmap.createBitmap(size.x, size.y,
@@ -320,8 +338,7 @@ public class EasyPaint extends GraphicsActivity implements
 						v.destroyDrawingCache();
 						colorChanged( newColor );
 						
-						Toast.makeText(getApplicationContext(),
-									   R.string.color_extracted,
+						makeText(R.string.color_extracted,
 									   Toast.LENGTH_SHORT).show();
 					} else {
 						
@@ -371,16 +388,14 @@ public class EasyPaint extends GraphicsActivity implements
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public void onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+		((BasicActivity<MayoralFamily>)getMunicipality()).getMenuInflater().inflate(R.menu.main, menu);
 	}
 
 	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
+	public void onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
-		return true;
 	}
 
 	@Override
@@ -390,8 +405,7 @@ public class EasyPaint extends GraphicsActivity implements
 
 		switch (item.getItemId()) {
 			case R.id.extract_color_menu: {
-				Toast.makeText(getApplicationContext(),
-							   R.string.tap_to_extract_color,
+				makeText(R.string.tap_to_extract_color,
 							   Toast.LENGTH_LONG).show();
 				extractingColor = true;
 				return true;
@@ -401,7 +415,7 @@ public class EasyPaint extends GraphicsActivity implements
 				mPaint.setMaskFilter(null);
 				return true;
 			case R.id.color_menu:
-				new ColorPickerDialog(this, this, mPaint.getColor()).show();
+				new ColorPickerDialog(getActivity(), this, mPaint.getColor()).show();
 				return true;
 			case R.id.emboss_menu:
 				mPaint.setShader( null );
@@ -420,7 +434,7 @@ public class EasyPaint extends GraphicsActivity implements
 					 * blurring it, then telling mPaint to use that instead of a solid color.
 					 */
 					
-					RenderScript rs = RenderScript.create( getApplicationContext( ) );
+					RenderScript rs = RenderScript.create( getGovernor() );
 					ScriptIntrinsicBlur script;
 					try {
 						script = ScriptIntrinsicBlur.create(rs, Element.RGBA_8888(rs));
@@ -448,8 +462,7 @@ public class EasyPaint extends GraphicsActivity implements
 					mPaint.setShader( shader );
 					return true;
 				} else {
-					Toast.makeText( this.getApplicationContext( ),
-									R.string.ability_disabled_need_newer_api_level,
+					makeText(R.string.ability_disabled_need_newer_api_level,
 									Toast.LENGTH_LONG ).show( );
 					return true;
 				}
@@ -459,10 +472,10 @@ public class EasyPaint extends GraphicsActivity implements
 				mPaint.setMaskFilter(mBlur);
 				return true;
 			case R.id.size_menu: {
-				LayoutInflater inflater = ( LayoutInflater ) getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+				LayoutInflater inflater = ( LayoutInflater ) getGovernor().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
 				View layout = inflater.inflate( R.layout.brush,
-												( ViewGroup ) findViewById( R.id.root ) );
-				AlertDialog.Builder builder = new AlertDialog.Builder( this )
+												( ViewGroup ) ((BasicActivity<MayoralFamily>)getMunicipality()).findViewById( R.id.root ) );
+				AlertDialog.Builder builder = new AlertDialog.Builder( getActivity() )
 						.setView( layout );
 				builder.setTitle( R.string.choose_width );
 				final AlertDialog alertDialog = builder.create( );
@@ -497,10 +510,10 @@ public class EasyPaint extends GraphicsActivity implements
 				return true;
 			}
 			case R.id.erase_menu: {
-				LayoutInflater inflater_e = ( LayoutInflater ) getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+				LayoutInflater inflater_e = ( LayoutInflater ) getGovernor().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
 				View layout_e = inflater_e.inflate( R.layout.brush,
-													( ViewGroup ) findViewById( R.id.root ) );
-				AlertDialog.Builder builder_e = new AlertDialog.Builder( this )
+													( ViewGroup ) ((BasicActivity<MayoralFamily>)getMunicipality()).findViewById( R.id.root ) );
+				AlertDialog.Builder builder_e = new AlertDialog.Builder( getActivity() )
 						.setView( layout_e );
 				builder_e.setTitle( R.string.choose_width );
 				final AlertDialog alertDialog_e = builder_e.create( );
@@ -555,8 +568,7 @@ public class EasyPaint extends GraphicsActivity implements
 					startActivity( Intent.createChooser( i,
 														 getString( R.string.toolbox_share_title ) ) );
 				} catch( ActivityNotFoundException ex ) {
-					Toast.makeText( this.getApplicationContext( ),
-									R.string.no_way_to_share,
+					makeText(R.string.no_way_to_share,
 									Toast.LENGTH_LONG ).show( );
 				}
 				break;
@@ -571,11 +583,11 @@ public class EasyPaint extends GraphicsActivity implements
 			}
 			case R.id.fill_background_with_color: {
 				waitingForBackgroundColor = true;
-				new ColorPickerDialog( this, this, contentView.mBitmapBackground.getPixel( 0, 0 ) ).show();
+				new ColorPickerDialog( getActivity(), this, contentView.mBitmapBackground.getPixel( 0, 0 ) ).show();
 				return true;
 			}
 			case R.id.about_menu:
-				startActivity(new Intent(this, AboutActivity.class));
+				//startActivity(new Intent(getActivity(), AboutActivity.class));
 				break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -585,7 +597,7 @@ public class EasyPaint extends GraphicsActivity implements
 	 * This takes the screenshot of the whole screen. Is this a good thing?
 	 */
 	private File takeScreenshot(boolean showToast) {
-		View v = findViewById(R.id.CanvasId);
+		View v = ((BasicActivity<MayoralFamily>)getMunicipality()).findViewById(R.id.CanvasId);
 		v.setDrawingCacheEnabled(true);
 		Bitmap cachedBitmap = v.getDrawingCache();
 		Bitmap copyBitmap = cachedBitmap.copy(Bitmap.Config.RGB_565, true);
@@ -621,8 +633,7 @@ public class EasyPaint extends GraphicsActivity implements
 
 		if (file != null) {
 			if (showToast)
-				Toast.makeText(
-						getApplicationContext(),
+				makeText(
 						String.format(
 								getResources().getString(
 										R.string.saved_your_location_to),
@@ -633,7 +644,7 @@ public class EasyPaint extends GraphicsActivity implements
 			Intent requestScan = new Intent(
 					Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
 			requestScan.setData(Uri.fromFile(file));
-			sendBroadcast(requestScan);
+			getActivity().sendBroadcast(requestScan);
 
 			return file;
 		} else {
@@ -642,7 +653,7 @@ public class EasyPaint extends GraphicsActivity implements
 	}
 
 	private boolean isFirstTime() {
-		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+		SharedPreferences preferences = getActivity().getPreferences(Activity.MODE_PRIVATE);
 		boolean ranBefore = preferences.getBoolean("RanBefore", false);
 		if (!ranBefore) {
 			// first time
@@ -660,7 +671,7 @@ public class EasyPaint extends GraphicsActivity implements
 	public void onActivityResult( int requestCode, int resultCode, Intent data ) {
 		super.onActivityResult( requestCode, resultCode, data );
 
-		if( resultCode != RESULT_CANCELED ) { //"The resultCode will be RESULT_CANCELED if the activity explicitly returned that, didn't return any result, or crashed during its operation." (quote from https://developer.android.com/reference/android/app/Activity.html#onActivityResult(int,%20int,%20android.content.Intent) )
+		if( resultCode != Activity.RESULT_CANCELED ) { //"The resultCode will be RESULT_CANCELED if the activity explicitly returned that, didn't return any result, or crashed during its operation." (quote from https://developer.android.com/reference/android/app/Activity.html#onActivityResult(int,%20int,%20android.content.Intent) )
 			switch( requestCode ) {
 				case CHOOSE_IMAGE: {
 					setBackgroundUri( data.getData() );
@@ -676,7 +687,7 @@ public class EasyPaint extends GraphicsActivity implements
 
 		try {
 			//I don't like loading both full-sized and reduced-size copies of the image (the larger copy can use a lot of memory), but I couldn't find any other way to do this.
-			Bitmap fullsize = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+			Bitmap fullsize = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
 			Bitmap resized = Bitmap.createScaledBitmap(fullsize, contentView.mBitmap.getWidth(), contentView.mBitmap.getHeight(), true);
 			contentView.mBitmapBackground = resized;
 			//contentView.mCanvas = new Canvas( contentView.mBitmapBackground );
@@ -686,7 +697,7 @@ public class EasyPaint extends GraphicsActivity implements
 	}
 
 	public void loadFromIntents() {
-		Intent intent = getIntent();
+		Intent intent = getActivity().getIntent();
 		String action = intent.getAction();
 		String type = intent.getType();
 		System.out.println("Intentoso " + action + " type " + type);

@@ -12,13 +12,20 @@
         android:layout_height="match_parent"
         android:layout_margin="@dimen/spacing"
         android:orientation="vertical"
-        android:background="@drawable/outline">
+        android:background="@drawable/outline"
+        android:id="@+id/easy_paint">
 
-        <com.piercelbrooks.illuspeaker.DrawView
+        <!--<com.piercelbrooks.illuspeaker.DrawView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        </com.piercelbrooks.illuspeaker.DrawView>
+        </com.piercelbrooks.illuspeaker.DrawView>-->
+
+        <!--<anupam.acrylic.PictureLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </anupam.acrylic.PictureLayout>-->
 
     </LinearLayout>
 

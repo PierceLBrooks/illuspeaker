@@ -18,6 +18,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.Window;
 
@@ -230,6 +231,9 @@ public abstract class BasicActivity <T extends Enum<T>> extends FragmentActivity
 
     @Override
     public void onBackPressed() {
+        if (activeFragment != null) {
+            ((Mayor<T>)activeFragment).onBackPressed();
+        }
         if (!onBack()) {
             super.onBackPressed();
         }
@@ -344,6 +348,22 @@ public abstract class BasicActivity <T extends Enum<T>> extends FragmentActivity
     @Override
     public void death() {
         Governor.getInstance().unregister(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (activeFragment != null) {
+            ((Mayor<T>)activeFragment).onCreateOptionsMenu(menu);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (activeFragment != null) {
+            ((Mayor<T>)activeFragment).onPrepareOptionsMenu(menu);
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     public void onKey(KeyEvent event) {

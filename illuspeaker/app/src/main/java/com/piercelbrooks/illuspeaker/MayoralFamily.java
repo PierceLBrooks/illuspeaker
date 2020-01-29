@@ -6,5 +6,6 @@ package com.piercelbrooks.illuspeaker;
 public enum MayoralFamily
 {
     MAIN,
-    DRAW
+    DRAW,
+    DRAW_REAL
 }
