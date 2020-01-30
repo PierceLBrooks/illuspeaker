@@ -103,6 +103,11 @@ public abstract class BasicService <T extends Service> extends Service implement
     }
 
     @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        stopSelf();
+    }
+
+    @Override
     public void onCreate()
     {
         super.onCreate();

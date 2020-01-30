@@ -8,8 +8,10 @@ import android.support.annotation.NonNull;
 import android.view.View;
 
 import com.piercelbrooks.common.BasicFragment;
+import com.piercelbrooks.p2p.WiFiDirectServicesList;
 
 import anupam.acrylic.EasyPaint;
+import ro.polak.webserver.MainService;
 
 public class DrawFragment extends BasicFragment<MayoralFamily>
 {
@@ -19,6 +21,18 @@ public class DrawFragment extends BasicFragment<MayoralFamily>
 
         public DrawRealFragment() {
             super();
+        }
+
+        @Override
+        public void createView(@NonNull View view) {
+            super.createView(view);
+            getFragmentManager().beginTransaction().replace(R.id.preview, new WiFiDirectServicesList(), MainService.FRAGMENT_TAG).commitAllowingStateLoss();
+        }
+
+        @Override
+        public void onDestroyView() {
+            getFragmentManager().beginTransaction().remove(getFragmentManager().findFragmentByTag(MainService.FRAGMENT_TAG)).commitAllowingStateLoss();
+            super.onDestroyView();
         }
 
         @Override

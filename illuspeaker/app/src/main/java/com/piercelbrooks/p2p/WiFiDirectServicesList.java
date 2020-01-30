@@ -1,7 +1,7 @@
 
 package com.piercelbrooks.p2p;
 
-import android.app.ListFragment;
+import android.support.v4.app.ListFragment;
 import android.content.Context;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
@@ -25,7 +25,7 @@ public class WiFiDirectServicesList extends ListFragment {
 
     WiFiDevicesAdapter listAdapter = null;
 
-    interface DeviceClickListener {
+    public interface DeviceClickListener {
         public void connectP2p(WiFiP2pService wifiP2pService);
     }
 

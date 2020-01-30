@@ -2,7 +2,7 @@
 package com.piercelbrooks.p2p;
 
 import android.Manifest;
-import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -48,7 +48,7 @@ import java.util.Map;
  * {@code WiFiChatFragment} is then added to the the main activity which manages
  * the interface and messaging needs for a chat session.
  */
-public class WiFiServiceDiscoveryActivity extends Activity implements
+public class WiFiServiceDiscoveryActivity extends FragmentActivity implements
         DeviceClickListener, Handler.Callback, MessageTarget,
         ConnectionInfoListener {
 
@@ -120,7 +120,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements
         channel = manager.initialize(this, getMainLooper(), null);
 
         servicesList = new WiFiDirectServicesList();
-        getFragmentManager().beginTransaction()
+        getSupportFragmentManager().beginTransaction()
                 .add(R.id.container_root, servicesList, "services").commit();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
@@ -210,7 +210,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements
 
                             // update the UI and add the item the discovered
                             // device.
-                            WiFiDirectServicesList fragment = (WiFiDirectServicesList) getFragmentManager()
+                            WiFiDirectServicesList fragment = (WiFiDirectServicesList) getSupportFragmentManager()
                                     .findFragmentByTag("services");
                             if (fragment != null) {
                                 WiFiDevicesAdapter adapter = ((WiFiDevicesAdapter) fragment
@@ -366,7 +366,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements
             handler.start();
         }
         chatFragment = new WiFiChatFragment();
-        getFragmentManager().beginTransaction()
+        getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container_root, chatFragment).commit();
         statusTxtView.setVisibility(View.GONE);
     }
