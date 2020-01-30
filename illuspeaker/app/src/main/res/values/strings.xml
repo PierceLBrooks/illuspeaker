@@ -1,4 +1,7 @@
 <resources>
+    <string name="service_notification_code">1</string>
+    <string name="service_description">@string/service_name</string>
+    <string name="service_name">@string/app_name</string>
     <string name="app_name">illuspeaker</string>
     <string name="finding_service">Finding local services</string>
     <string name="btn_send">Send</string>

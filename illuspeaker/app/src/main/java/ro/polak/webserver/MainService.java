@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 
 import com.piercelbrooks.common.BasicServiceBinder;
+import com.piercelbrooks.illuspeaker.R;
 
 import java.util.List;
 
@@ -33,12 +34,12 @@ public final class MainService extends BaseMainService<MainService> {
 
     @Override
     protected String getName() {
-        return null;
+        return getString(R.string.service_name);
     }
 
     @Override
     protected Integer getNotification() {
-        return null;
+        return new Integer(Integer.parseInt(getString(R.string.service_notification_code)));
     }
 
     @Override
@@ -54,7 +55,7 @@ public final class MainService extends BaseMainService<MainService> {
 
     @Override
     public String getDescription() {
-        return null;
+        return getString(R.string.service_description);
     }
 
     @NonNull
@@ -65,6 +66,6 @@ public final class MainService extends BaseMainService<MainService> {
 
     @Override
     public Class<?> getServiceClass() {
-        return null;
+        return MainService.class;
     }
 }
