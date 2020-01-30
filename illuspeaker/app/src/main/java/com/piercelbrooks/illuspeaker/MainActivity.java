@@ -12,12 +12,23 @@ import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 
-import com.piercelbrooks.common.BasicActivity;
+import com.piercelbrooks.common.BasicServiceActivity;
+import com.piercelbrooks.common.BasicServiceBinder;
+import com.piercelbrooks.common.BasicServiceConnector;
 import com.piercelbrooks.common.Mayor;
 
-public class MainActivity extends BasicActivity<MayoralFamily> {
+import ro.polak.webserver.BaseMainService;
+import ro.polak.webserver.BaseMainServiceClient;
+import ro.polak.webserver.MainService;
+
+public class MainActivity extends BasicServiceActivity<MayoralFamily, MainService> implements BaseMainServiceClient {
 
     private static final String TAG = "ILL-MainAct";
+
+    @Override
+    protected BasicServiceConnector<MayoralFamily, MainService> getConnector(BasicServiceActivity activity) {
+        return new MainServiceConnector(this);
+    }
 
     public MainActivity() {
         super();
@@ -45,12 +56,12 @@ public class MainActivity extends BasicActivity<MayoralFamily> {
 
     @Override
     protected void create() {
-
+        beginService();
     }
 
     @Override
     protected void destroy() {
-
+        endService();
     }
 
     @Override
@@ -70,6 +81,7 @@ public class MainActivity extends BasicActivity<MayoralFamily> {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setActionBar(toolbar);
         //getActionBar().setDisplayShowTitleEnabled(false);
+
     }
 
     @Override
@@ -136,5 +148,15 @@ public class MainActivity extends BasicActivity<MayoralFamily> {
 
     public boolean show(@Nullable MayoralFamily mayoralFamily) {
         return show(getNewMayor(mayoralFamily));
+    }
+
+    @Override
+    public Class<?> getServiceClass() {
+        return MainService.class;
+    }
+
+    @Override
+    public void notifyStateChanged() {
+
     }
 }

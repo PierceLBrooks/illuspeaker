@@ -3,9 +3,10 @@
 
 package com.piercelbrooks.common;
 
+import android.app.Service;
 import android.os.Binder;
 
-public abstract class BasicServiceBinder <T extends BasicService<T>> extends Binder implements BasicServiceUser<T>
+public abstract class BasicServiceBinder <T extends Service> extends Binder implements BasicServiceUser<T>
 {
     private static final String TAG = "PLB-BaseServeBind";
 

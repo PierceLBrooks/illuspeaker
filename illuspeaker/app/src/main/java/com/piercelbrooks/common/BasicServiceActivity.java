@@ -4,13 +4,14 @@
 package com.piercelbrooks.common;
 
 import android.app.ActivityManager;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class BasicServiceActivity <T extends Enum<T>, U extends BasicService<U>> extends BasicActivity<T> implements BasicServiceUser<U>
+public abstract class BasicServiceActivity <T extends Enum<T>, U extends Service> extends BasicActivity<T> implements BasicServiceUser<U>
 {
     private static final String TAG = "PLB-BaseServeAct";
 

@@ -5,24 +5,23 @@
  * Copyright (c) Piotr Polak 2008-2017
  **************************************************/
 
-package ro.polak.webserver.base;
+package ro.polak.webserver;
 
+import com.piercelbrooks.common.BasicService;
+
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Icon;
 import android.content.res.AssetManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Binder;
 import android.os.Environment;
-import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.format.Formatter;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,13 +33,13 @@ import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.net.ServerSocketFactory;
-
 import ro.polak.http.configuration.ServerConfig;
 import ro.polak.http.configuration.ServerConfigFactory;
 import ro.polak.http.controller.Controller;
 import ro.polak.http.controller.impl.ControllerImpl;
 import ro.polak.http.gui.ServerGui;
+import ro.polak.webserver.base.BaseServerSocketFactory;
+import ro.polak.webserver.base.ConfigurationException;
 import ro.polak.webserver.base.impl.BaseAndroidServerConfigFactory;
 import ro.polak.webserver.base.logic.AssetUtil;
 
@@ -52,31 +51,19 @@ import static ro.polak.http.configuration.impl.ServerConfigImpl.PROPERTIES_FILE_
  * @author Piotr Polak piotr [at] polak [dot] ro
  * @since 201709
  */
-public abstract class BaseMainService extends Service implements ServerGui {
+public abstract class BaseMainService <T extends Service> extends BasicService<BaseMainService<T>> implements ServerGui {
 
     private static final Logger LOGGER = Logger.getLogger(BaseMainService.class.getName());
     private static final int NOTIFICATION_ID = 0;
     private static final int DEFAULT_HTTP_PORT = 80;
 
     @Nullable
-    private BaseMainActivity client = null;
+    private BaseMainServiceClient client = null;
     private Controller controller;
-    private final IBinder binder = new LocalBinder();
     private boolean isServiceStarted = false;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public IBinder onBind(final Intent intent) {
-        return binder;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int onStartCommand(final Intent intent, final int flags, final int startId) {
+    protected void create() {
         isServiceStarted = true;
 
         ServerConfigFactory serverConfigFactory = getServerConfigFactory(this);
@@ -85,8 +72,17 @@ public abstract class BaseMainService extends Service implements ServerGui {
 
         controller = new ControllerImpl(serverConfigFactory, new BaseServerSocketFactory(), this);
         controller.start();
+    }
 
-        return START_STICKY;
+    @Override
+    protected void destroy() {
+        if (getServiceState().isWebServerStarted()) {
+            controller.stop();
+        }
+
+        isServiceStarted = false;
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.cancel(NOTIFICATION_ID);
     }
 
     /**
@@ -101,23 +97,9 @@ public abstract class BaseMainService extends Service implements ServerGui {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onDestroy() {
-        if (getServiceState().isWebServerStarted()) {
-            controller.stop();
-        }
-
-        isServiceStarted = false;
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.cancel(NOTIFICATION_ID);
-    }
-
-    /**
      * Returns registered client.
      */
-    public BaseMainActivity getClient() {
+    public BaseMainServiceClient getClient() {
         return client;
     }
 
@@ -126,7 +108,7 @@ public abstract class BaseMainService extends Service implements ServerGui {
      *
      * @param client
      */
-    public void registerClient(final BaseMainActivity client) {
+    public void registerClient(final BaseMainServiceClient client) {
         this.client = client;
     }
 
@@ -179,7 +161,7 @@ public abstract class BaseMainService extends Service implements ServerGui {
 
         Intent notificationIntent = new Intent(this, getActivityClass());
         PendingIntent pIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-        setNotification(getNotificationBuilder(pIntent, "Started", R.drawable.online).build());
+        setNotification(getNotificationBuilder(pIntent, "Started", ro.polak.webserver.base.R.drawable.online).build());
     }
 
     /**
@@ -193,7 +175,7 @@ public abstract class BaseMainService extends Service implements ServerGui {
 
         Intent notificationIntent = new Intent(this, getActivityClass());
         PendingIntent pIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-        setNotification(getNotificationBuilder(pIntent, "Stopped", R.drawable.offline).build());
+        setNotification(getNotificationBuilder(pIntent, "Stopped", ro.polak.webserver.base.R.drawable.offline).build());
     }
 
     /**
@@ -202,7 +184,7 @@ public abstract class BaseMainService extends Service implements ServerGui {
      * @return
      */
     @NonNull
-    protected abstract Class<? extends BaseMainActivity> getActivityClass();
+    protected abstract Class<? extends Activity> getActivityClass();
 
     private void doFirstRunChecks(final ServerConfigFactory serverConfigFactory) {
         ServerConfig serverConfig = serverConfigFactory.getServerConfig();
@@ -256,7 +238,7 @@ public abstract class BaseMainService extends Service implements ServerGui {
                 .setSmallIcon(icon)
                 .setContentIntent(pIntent)
                 .setOngoing(true)
-                .addAction(R.drawable.online, "Open", pIntent);
+                .addAction(ro.polak.webserver.base.R.drawable.online, "Open", pIntent);
     }
 
     /**
@@ -266,7 +248,7 @@ public abstract class BaseMainService extends Service implements ServerGui {
      */
     private String getLocalIpAddress() {
         try {
-            WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 
             int ipAddress = wifiInfo.getIpAddress();
@@ -294,21 +276,6 @@ public abstract class BaseMainService extends Service implements ServerGui {
         }
 
         return "127.0.0.1";
-    }
-
-    /**
-     * Local binder instance.
-     */
-    public class LocalBinder extends Binder {
-
-        /**
-         * Returns bounded service instance.
-         *
-         * @return
-         */
-        public BaseMainService getService() {
-            return BaseMainService.this;
-        }
     }
 
     /**

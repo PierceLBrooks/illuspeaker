@@ -31,7 +31,7 @@ public class Splash extends Activity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		setContentView(R.layout.main);
+		setContentView(R.layout.draw_real_fragment);
 
 		Thread t = new Thread() {
 

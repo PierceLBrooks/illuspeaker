@@ -18,7 +18,7 @@ import com.piercelbrooks.illuspeaker.R;
 
 import java.util.List;
 
-public abstract class BasicService <T extends BasicService<T>> extends Service implements BasicServiceUser<T>, Citizen
+public abstract class BasicService <T extends Service> extends Service implements BasicServiceUser<T>, Citizen
 {
     private static final String TAG = "PLB-BaseServe";
 

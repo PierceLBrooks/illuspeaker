@@ -3,7 +3,9 @@
 
 package com.piercelbrooks.common;
 
-public interface BasicServiceUser <T extends BasicService<T>>
+import android.app.Service;
+
+public interface BasicServiceUser <T extends Service>
 {
     public Class<?> getServiceClass();
     public T getService();

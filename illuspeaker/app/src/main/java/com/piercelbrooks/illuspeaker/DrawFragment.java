@@ -28,7 +28,7 @@ public class DrawFragment extends BasicFragment<MayoralFamily>
 
         @Override
         public int getLayout() {
-            return R.layout.main;
+            return R.layout.draw_real_fragment;
         }
 
         @Override

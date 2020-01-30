@@ -21,7 +21,7 @@ import ro.polak.http.exception.ServletException;
 import ro.polak.http.servlet.HttpServlet;
 import ro.polak.http.servlet.HttpServletRequest;
 import ro.polak.http.servlet.HttpServletResponse;
-import ro.polak.webserver.base.BaseMainService;
+import ro.polak.webserver.BaseMainService;
 
 import static api.logic.APIResponse.MEDIA_TYPE_APPLICATION_JSON;
 
@@ -37,7 +37,7 @@ public final class SmsInboxServlet extends HttpServlet {
 
     @Override
     public void service(final HttpServletRequest request, final HttpServletResponse response) throws ServletException {
-        SmsBox smsBox = new SmsBox((((BaseMainService) getServletContext().getAttribute("android.content.Context")).getClient()));
+        SmsBox smsBox = new SmsBox((Activity) (((BaseMainService) getServletContext().getAttribute("android.content.Context")).getClient()));
         List<SmsBox.Message> messages = smsBox.readMessages(ALL_STRING);
 
         try {

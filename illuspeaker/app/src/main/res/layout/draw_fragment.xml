@@ -15,18 +15,6 @@
         android:background="@drawable/outline"
         android:id="@+id/easy_paint">
 
-        <!--<com.piercelbrooks.illuspeaker.DrawView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </com.piercelbrooks.illuspeaker.DrawView>-->
-
-        <!--<anupam.acrylic.PictureLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </anupam.acrylic.PictureLayout>-->
-
     </LinearLayout>
 
 </RelativeLayout>

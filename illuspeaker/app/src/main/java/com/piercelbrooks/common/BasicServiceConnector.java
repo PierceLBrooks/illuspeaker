@@ -3,12 +3,13 @@
 
 package com.piercelbrooks.common;
 
+import android.app.Service;
 import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
-public abstract class BasicServiceConnector <T extends Enum<T>, U extends BasicService<U>> implements ServiceConnection, BasicServiceUser<U>
+public abstract class BasicServiceConnector <T extends Enum<T>, U extends Service> implements ServiceConnection, BasicServiceUser<U>
 {
     private static final String TAG = "PLB-BaseServeConnect";
 

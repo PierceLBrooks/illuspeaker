@@ -5,7 +5,7 @@
  * Copyright (c) Piotr Polak 2008-2017
  **************************************************/
 
-package ro.polak.webserver.base;
+package ro.polak.webserver;
 
 import android.Manifest;
 import android.content.ComponentName;
@@ -24,6 +24,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.piercelbrooks.common.BasicServiceBinder;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -34,7 +36,7 @@ import java.util.Set;
  * @author Piotr Polak piotr [at] polak [dot] ro
  * @since 201008
  */
-public abstract class BaseMainActivity extends AppCompatActivity {
+public abstract class BaseMainActivity extends AppCompatActivity implements BaseMainServiceClient {
 
     private static final int PERMISSIONS_REQUEST_CODE = 5543;
     private BaseMainService mainService;
@@ -74,7 +76,7 @@ public abstract class BaseMainActivity extends AppCompatActivity {
          */
         @Override
         public void onServiceConnected(final ComponentName componentName, final IBinder iBinder) {
-            BaseMainService.LocalBinder binder = (BaseMainService.LocalBinder) iBinder;
+            BasicServiceBinder<MainService> binder = (BasicServiceBinder<MainService>) iBinder;
             mainService = binder.getService();
             mainService.registerClient(BaseMainActivity.this);
             isMainServiceBound = true;
@@ -123,6 +125,7 @@ public abstract class BaseMainActivity extends AppCompatActivity {
     /**
      * Call this method to force update the state of the service.
      */
+    @Override
     public void notifyStateChanged() {
         if (isMainServiceBound) {
             BaseMainService.ServiceStateDTO serviceStateDTO = mainService.getServiceState();
